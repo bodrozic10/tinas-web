@@ -26,3 +26,32 @@ export const getProfileInfo = async (userId: string) => {
   }
   return null;
 };
+
+interface UploadResponse {
+  id: string;
+  path: string;
+  fullPath: string;
+}
+export const uploadProfileImage = async (userId: string, file: any) => {
+  const { data, error } = await supabase.storage
+    .from("user-images")
+    .upload(`public/profileImages/${userId}`, file, {
+      upsert: true,
+      cacheControl: "0",
+    });
+  console.log({ data, error });
+  if (data) {
+    return data as UploadResponse;
+  }
+  return null;
+};
+
+export const getProfileImage = async (userId: string) => {
+  const { data } = supabase.storage
+    .from("user-images")
+    .getPublicUrl(`public/profileImages/${userId}`);
+  if (data) {
+    return data.publicUrl;
+  }
+  return "";
+};
